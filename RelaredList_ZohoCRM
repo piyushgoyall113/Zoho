@@ -1,0 +1,28 @@
+// Get Record From Module by the ID
+resvp = zoho.crm.getRecordById("Contacts",cid);
+contactype = ifnull(resvp.get("Contact_Type"),"");
+buyingprice = ifnull(resvp.get("Buying_Price"),null);
+if(contactype == "Buyer" && buyingprice != null)
+{
+	responseXML = '<record>';
+  //Search Recod from the another module..........
+	resvp1 = zoho.crm.searchRecords("Contacts","(Selling_Price:equals:" + buyingprice + ")");
+	if(resvp1.size() > 0)
+	{
+		for each  rec in resvp1
+		{
+			name = rec.get("First_Name");
+			sprice = rec.get("Selling_Price");
+			responseXML = responseXML + '<row no="0"><FL val="Seller Name">' + name + '</FL><FL val="Price">' + sprice + '</FL></row>';
+		}
+		responseXML = responseXML + '</record>';
+	}
+}
+else
+{
+	responseXML = responseXML + "<error>=><message>No Seller Data is Present for this Buyer</message></error>";
+}
+return responseXML;
+
+
+// If you facing an issue in XML then change single '' with double ""
